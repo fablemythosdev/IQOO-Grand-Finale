@@ -1,6 +1,6 @@
 # Context Bubble — An AI Assistant That Stays With You
 
-> Project story for the **iQOO Hackathon 2026 · City Battles** — Prototype built during iQOO Hackathon 2026 for the Productivity track — fully on-device (Gemma on NPU, local retrieval, notification triage).
+> Project story for the **iQOO Hackathon 2026 · Grand Finale** — Prototype built during October 3–4, 2026 (IST) for the Productivity track — fully on-device (Gemma on NPU, local retrieval, notification triage).
 
 ## Inspiration
 
@@ -248,7 +248,7 @@ The biggest lesson was that trust, latency, and reliability are just as importan
 
 ## What’s next
 
-The next steps — and the **iQOO Hackathon 2026 · City Battles** focus — are:
+The next steps — and the **iQOO Hackathon 2026 · Grand Finale** focus — are:
 
 - Take the assistant fully on-device: local LLM on the Snapdragon NPU, on-device embeddings and retrieval, and notification triage so memory never depends on a cloud provider.
 - Complete the production OAuth connection between ChatGPT and the Context Bubble MCP.

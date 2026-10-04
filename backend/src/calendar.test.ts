@@ -7,8 +7,8 @@ const config = loadConfig({ NODE_ENV: "development", INSTALLATION_TOKEN_SECRET: 
 const user = { id: "03d271db-8a32-4ac5-8612-18637c0e66e9", accessToken: "token", claims: {} };
 const event: CalendarEventInput = {
   title: "Project review",
-  startDateTime: "2026-07-25T10:00:00+05:30",
-  endDateTime: "2026-07-25T10:30:00+05:30",
+  startDateTime: "2026-10-03T10:00:00+05:30",
+  endDateTime: "2026-10-03T10:30:00+05:30",
   timeZone: "Asia/Calcutta",
 };
 

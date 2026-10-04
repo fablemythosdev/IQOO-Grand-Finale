@@ -2,7 +2,7 @@
 
 > **iQOO Hackathon 2026 — local-only build:** Gates below are the *reference design*. The APK pushed to `ladiesmans217/IQOO` is validated by the **59/59 Play/Lab unit tests + lint + on-device smoke** — vault is `LOCAL_ONLY`. This file is kept for reference.
 
-Validated during iQOO Hackathon 2026 (Aug 25) — prototype built entirely within the hackathon timeline.
+Prototype built during October 3–4, 2026 (IST) for iQOO Hackathon 2026. The validation record below documents the prototype checks.
 
 ## Current source and artifact gates
 

@@ -1,180 +1,261 @@
+<div align="center">
+
 # Context Bubble
 
-**A privacy-first Android assistant that stays beside your work instead of pulling you away from it.**
+### Turn what's on your screen into your next step.
 
-Context Bubble is a lightweight, edge-docked assistant for Android 13+ that understands a screen only when you tap it, answers over the current app, and keeps only the memories you approve.
+A privacy-first Android assistant for answers, memories, voice, and reminders—right over the app you're using.
 
-It solves a simple friction: context is trapped where it appeared. A message saying “email me on Tuesday” normally means switching apps, copying, and re-explaining. Bubble turns that into one tap where you already are.
+**iQOO Hackathon 2026 · Grand Finale**<br>
+**Track: Productivity · Prototype built October 3–4, 2026 (IST)**<br>
+Built from scratch by **Manjunath Patil**.
 
-> **iQOO Hackathon 2026 · City Battles** — Prototype built during iQOO Hackathon 2026 — Aug 25-30, Bengaluru — fully on-device (Gemma on NPU, local embeddings, notification triage).
+[See the app](#see-the-app) · [Features](#what-you-can-do) · [Run locally](#run-locally) · [Architecture](#architecture)
 
-## See it in action
+</div>
+
+---
+
+## The problem
+
+Useful information arrives everywhere: a message, a browser page, a document, a form. Acting on it often means leaving the app, copying text, opening an assistant, and explaining the same context again.
+
+**Context Bubble keeps help beside the task.** Tap the floating bubble to ask about the screen, save something worth remembering, fill a field, or create a reminder. Answers appear over the current app, and you decide what to keep.
+
+## Why Productivity
+
+Context Bubble addresses three everyday productivity problems:
+
+- **Repeated context switching:** ask about the screen without opening a separate assistant.
+- **Information lost between apps:** turn selected context into a reviewed memory or reminder.
+- **Repetitive input:** reuse saved details through Quick Fill or dictate into a focused field.
+
+The goal is simple: fewer interruptions between understanding something and acting on it.
+
+## See the app
 
 <table>
   <tr>
-    <td align="center"><img src="docs/images/context-bubble-overlay-menu.jpg" width="240" alt="Context Bubble menu displayed over Brave"></td>
-    <td align="center"><img src="docs/images/context-bubble-home-privacy.png" width="240" alt="Context Bubble home and assistant health screen"></td>
-    <td align="center"><img src="docs/images/context-bubble-controls-retention.png" width="240" alt="Context Bubble privacy and retention controls"></td>
+    <td align="center"><img src="docs/images/context-bubble-overlay-menu.jpg" width="240" alt="Context Bubble floating action menu over a browser"></td>
+    <td align="center"><img src="docs/images/context-bubble-home-privacy.png" width="240" alt="Context Bubble home screen and permission health controls"></td>
+    <td align="center"><img src="docs/images/context-bubble-controls-retention.png" width="240" alt="Context Bubble voice, privacy, and storage retention settings"></td>
   </tr>
   <tr>
-    <td align="center"><strong>Available in the current app</strong><br>Ask, remember, generate, fill, or create a reminder.</td>
-    <td align="center"><strong>Permission health at a glance</strong><br>Every missing capability has a visible repair path.</td>
-    <td align="center"><strong>Private by default</strong><br>Voice mode, retention, and encrypted storage stay user-controlled.</td>
+    <td align="center"><strong>Help where you work</strong><br>Open actions over a supported app.</td>
+    <td align="center"><strong>Visible permission controls</strong><br>Review access and repair missing permissions.</td>
+    <td align="center"><strong>Storage you control</strong><br>Manage voice settings, retention, and saved captures.</td>
   </tr>
 </table>
 
-## How it works
-
-1. The bubble remains quietly docked to a safe screen edge over allowed applications.
-2. The user taps it and chooses **Ask about screen**, **Remember**, **Generate image**, **Quick Fill**, or **Reminder**.
-3. Context Bubble checks the current package and sensitive-screen policy before reading anything.
-4. It captures only the context needed for that explicit request and streams the result into an overlay over the current app.
-5. The user can copy, save, edit, confirm, retry, or close the result. External writes always receive an exact preview and confirmation.
-
-A long press starts a live assistant conversation by default. An optional setting turns the same gesture into transcription-only mode, which inserts into the focused field and preserves the transcript in the clipboard if insertion fails.
-
 ## What you can do
 
-- **Ask & talk:** understand, summarize, translate or draft from the current screen; Realtime voice with interruption and transcription fallback.
-- **Dictate & remember:** polished speech insertion with wrong-target protection; review a structured memory before saving locally.
-- **Generate & fill:** create an image from screen context; Quick Fill inserts names/emails/phones/addresses (cards/OTPs blocked).
-- **Reminders & vault:** extract time/recurrence and confirm a local reminder; browse memories, transcripts and captures with retention controls.
-
-## Memory that the user owns
-
-Context Bubble separates data into three lanes so “using context” never silently becomes “remembering everything.”
-
-| Lane | Purpose | Leaves the phone? |
-|---|---|---|
-| **Ephemeral context** | Used only for the active request, then discarded | Only the minimum request context sent to the assistant |
-| **Local only** | Quick Fill, private notes, raw captures, transcripts, and vault items | No, unless explicitly shared for one action |
-| **Shared AI** | User-approved facts available across Context Bubble sessions | Yes, encrypted and synchronized after sign-in |
-
-Context Bubble also exposes its own authenticated MCP server. After the user connects it and grants access, ChatGPT can search approved Shared AI memories and prepare changes. Writes and deletes use a two-stage preview plus a ten-minute, one-use confirmation token.
-
-This does **not** modify native ChatGPT Memory. Context Bubble remains the source of truth, and local-only data is never exposed through MCP.
-
-## Privacy is a hard boundary
-
-- No idle mic, screenshot, or AI request — nothing runs until you tap the bubble.
-- Financial, UPI, password/OTP, biometric and permission screens are hard-blocked and can’t be weakened.
-- Raw captures never enter cloud storage; generated images upload only after **Save**, encrypted.
-- Screen text is untrusted; model output can’t authorize actions. All consequential writes need a preview and confirmation.
-- Local files use AES-256-GCM + Keystore; private screens are excluded from backups.
-
-## What makes it different
-
-- **Stays in the workflow** — answers over the current app, not a separate assistant.
-- **Consent-driven** — bubble is always there; capture and memory only on tap.
-- **Explicit memory lanes** — ephemeral / local-only / shared can’t silently collapse.
-- **Android-native** — overlays, insets, Accessibility, and recovery handled at the platform level.
-
-## Current implementation status
-
-| Capability | Status |
+| Feature | In your workflow |
 |---|---|
-| Persistent overlay, in-app answer cards, Quick Fill, local vault, exclusions, and reminders | Implemented on Android — 100% local |
-| Screen understanding, image generation, voice | Prototype: OpenAI via `adb reverse`; flagship: on-device Gemma on NPU |
-| Encrypted local vault + on-device RAG (384-d) | Implemented; `LOCAL_ONLY` — no cloud queue, no Supabase |
-| MCP / Calendar sync | Disabled in this local-only build (code retained, not wired) |
-| Deterministic Accessibility automation | Lab APK only; compile-time excluded from Play |
+| **Ask about screen** | Ask for an explanation, summary, translation, or draft using explicitly captured screen context. Receive a streamed answer in an overlay. |
+| **Remember** | Review and edit a proposed memory before saving it in the encrypted local vault. |
+| **Quick Fill** | Insert saved names, email addresses, phone numbers, addresses, or snippets into a supported field. |
+| **Voice and dictation** | Long-press for a live assistant conversation, or choose transcription mode to dictate into the focused field. |
+| **Reminders** | Review the title, note, and schedule before creating a local reminder. |
+| **Generate image** | Request an image inspired by screen context, then choose whether to save or share the result. |
+| **Vault and settings** | Browse saved information, pin important items, manage retention, and exclude apps from the bubble. |
 
-## Key engineering decisions
+Voice insertion checks the target field again before writing. If insertion cannot complete, a clipboard fallback helps preserve the transcript.
 
-| Decision | Why |
+### A short demo
+
+1. Open a supported browser or notes app with: **“My favourite cake is chocolate. Order one for the team on October 4, 2026.”**
+2. Tap **Ask about screen** to get a brief of the visible information.
+3. Choose **Remember**, review the extracted preference, and save it locally.
+4. Choose **Reminder**, review the schedule, and confirm it.
+5. Open the vault to find the saved memory. Try **Quick Fill** in a normal text field.
+
+This demonstrates the central loop: **screen → understanding → reviewed action**, without leaving the task to open an assistant.
+
+## Privacy and user control
+
+Screen capture and microphone use start through explicit interaction. The bubble does not continuously record the screen or listen to conversations.
+
+- **Protected surfaces:** package and field checks restrict access on known financial, authentication, password, OTP, and other sensitive surfaces. User exclusions add further restrictions.
+- **Encrypted storage:** vault values and capture files use AES-GCM with an Android Keystore key. Android backups are disabled for the app.
+- **Reviewed actions:** memory saving and reminder creation expose editable previews. Calendar and other consequential operations use policy checks and confirmation paths.
+- **Untrusted screen content:** screen text is treated as context, not authorization to execute instructions.
+- **Permission visibility:** onboarding and Assistant health explain overlay, Accessibility, microphone, and notification access.
+
+**Local storage and AI processing are different.** The current prototype uses a backend for AI. Invoked requests can send screen text, a screenshot, audio, and saved memory context to that backend and its AI provider. Saving a memory locally does not guarantee that it will never be included in a later assistant request.
+
+See the [privacy document](docs/PRIVACY.md) and [threat model](docs/THREAT_MODEL.md) for additional design context. The implementation status below describes this source snapshot.
+
+## Implementation status
+
+| Area | Current source |
 |---|---|
-| Native Kotlin instead of React Native | Overlays, Accessibility, audio routing, foreground services, and autofill are platform-sensitive |
-| Classic `View` for the idle bubble, Compose for the app | Keeps the always-running hierarchy small without sacrificing maintainable settings UI |
-| Separate Play and Lab builds | Keeps experimental deterministic automation out of the public artifact |
-| Local-first storage with three memory lanes | Prevents temporary context or private data from silently becoming shared memory |
-| Context Bubble MCP instead of claiming native ChatGPT Memory sync | Gives ChatGPT explicit, revocable access to user-approved app-owned memories |
+| Floating bubble, action overlays, app exclusions, and permission health | Implemented in the Android app. |
+| Encrypted vault, Quick Fill, retention, and local reminder scheduling | Implemented with Android storage and platform services. |
+| Screen assistance, image generation, transcription, and live voice | Backend clients and API routes are present; require a running backend and configured AI credentials. |
+| Shared memory, Google sign-in, Calendar, and MCP | Integration code is present and requires additional service configuration. Automatic shared-memory enqueue and periodic cloud sync are disabled in the current app container. |
+| Deterministic Accessibility automation | Experimental Lab flavor; the Play flavor uses a separate actuator implementation. |
+| On-device language-model inference and local semantic retrieval | Future direction; this snapshot does not include a Gemma/NPU inference implementation. |
+
+This is a prototype. Feature availability depends on permissions, backend configuration, and the Android device. Historical checks are recorded in [VALIDATION.md](docs/VALIDATION.md); they are not a claim that every check has been rerun against this checkout.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    A[Android bubble] --> B[Device policy and consent]
-    B --> C[Encrypted local vault]
-    C --> D[On-device Gemma · NPU]
-    D --> E[Local RAG · 384-d]
-    E --> F[Overlay answer]
-    B --> F
+    User[User taps or speaks] --> Bubble[Android bubble and overlays]
+    Bubble --> Policy[Package and field policy]
+    Policy --> Local[Encrypted vault / Quick Fill / reminders]
+    Policy --> Client[Assistant client]
+    Local -. Saved context for invoked requests .-> Client
+    Client --> API[TypeScript backend]
+    API --> AI[OpenAI services]
+    AI --> API
+    API --> Result[Answer / voice / image]
+    Result --> Bubble
 ```
 
-- Kotlin `minSdk 33`/`targetSdk 36` — Compose for the app shell, classic Views for the bubble.
-- Room, DataStore, Keystore, coroutines/Flow, Hilt, and WorkManager — all slices stay on-device.
-- Local vault is `LOCAL_ONLY` — no Supabase queue, no `PENDING` sync. `approvedAssistantContext` is local-only.
-- Gemma on the NPU + 384-d on-device retrieval; prototype on moto g54 uses OpenAI via `adb reverse` only because the chip can’t run it — flagship is fully on-device.
+| Layer | Technology and responsibility |
+|---|---|
+| **Android UI** | Kotlin, Jetpack Compose for screens, classic Android Views for the bubble and overlays. |
+| **Device integration** | Accessibility, foreground services, Autofill, AlarmManager, notifications, and audio handling. |
+| **Local data** | Room, DataStore, Android Keystore, encrypted files, and WorkManager cleanup. |
+| **Assistant transport** | OkHttp, streamed responses, Kotlin serialization, coroutines, and WebRTC voice. |
+| **Backend** | TypeScript and Hono; server-side AI access, installation authentication, policies, and usage quotas. |
+| **Optional cloud services** | Supabase functions and migrations, shared-memory services, Calendar integration, and MCP. |
 
-## Performance and reliability
+AI provider credentials belong on the server, not in the APK.
 
-Idle path is one overlay view + an event-driven Accessibility listener — no polling or wake locks. Drag is frame-coalesced and insets are live. Tested on moto g54 5G (Android 15); suites cover gestures, insets, encryption, sync conflicts, and Play/Lab isolation (see `docs/PERFORMANCE.md`).
+## Run locally
 
-## Quick start and sample data
+### Requirements
 
-No seeded data needed:
+- JDK 17 or newer.
+- Android SDK 36 and a compatible build-tools installation.
+- An Android 13+ phone or emulator (`minSdk 33`; target SDK 36).
+- Node.js 22+ and npm for the backend.
+- Server-side AI credentials for assistance, voice, and image features.
 
-1. Start backend + `adb reverse` (see **Local phone testing**).
-2. `adb install -r app/build/outputs/apk/play/debug/app-play-debug.apk` and pass health checks (Overlay + Accessibility).
-3. In Brave, show `My favourite cake is chocolate. Remind me to order one Friday at 3 PM.` → tap bubble → **Ask**, **Remember**, **Reminder**.
+The commands below use PowerShell from the repository root. The Gradle wrapper is included.
 
-## Build and test
-
-Requirements: Android SDK 36, JDK 17+, and Node.js 22+.
-
-```powershell
-.\gradlew.bat testPlayDebugUnitTest testLabDebugUnitTest lintPlayDebug assemblePlayDebug assembleLabDebug
-
-cd backend
-npm install
-npm run typecheck
-npm test
-deno task check:edge
-
-cd ..\oauth-consent
-npm install
-npm run build
-```
-
-Debug APKs are written to:
-
-- `app/build/outputs/apk/play/debug/app-play-debug.apk`
-- `app/build/outputs/apk/lab/debug/app-lab-debug.apk`
-
-Install upgrades with `adb install -r` so the Room database, permissions, and application data survive.
-
-### Local phone testing
+### 1. Configure and start the backend
 
 ```powershell
-$adb = "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
-& $adb reverse tcp:8787 tcp:8787
-
-cd backend
+Set-Location backend
+npm ci
 Copy-Item .env.example .env
+```
+
+Edit `backend/.env` and set:
+
+```dotenv
+OPENAI_API_KEY=<your-server-side-key>
+OPENAI_MODEL_PROFILE=budget
+INSTALLATION_TOKEN_SECRET=<a-random-secret-of-at-least-32-characters>
+```
+
+Keep `.env` private; it is excluded from Git. Supabase and Google credentials are only needed for the corresponding optional integrations. Review [all configuration options](backend/.env.example) before enabling them.
+
+Start the development server and keep that terminal open:
+
+```powershell
 npm run dev
 ```
 
-For AI-only local testing, configure `OPENAI_API_KEY`, `OPENAI_MODEL_PROFILE=budget`, and a strong `INSTALLATION_TOKEN_SECRET`. Cloud, MCP, Calendar, signed policy, and production Play Integrity activate only when their complete server configuration is present. See [`backend/.env.example`](backend/.env.example) for every variable.
+The default address is `http://127.0.0.1:8787`. Its health endpoint is `/health`.
 
-Release builds default to the deployed development backend. A production or compatible custom endpoint can be supplied through `MANAGED_BACKEND_URL` or the `managedBackendUrl` Gradle property; it must use HTTPS and end in `/`.
+### 2. Build and install the Android app
 
-## Deployment and deeper documentation
+In a second terminal at the repository root, connect your phone or start an Android emulator:
 
-- [Project story](aboutproject.md)
-- [Cloud deployment](docs/CLOUD_DEPLOYMENT.md)
-- [Threat model](docs/THREAT_MODEL.md)
-- [Performance contract](docs/PERFORMANCE.md)
-- [Validation record](docs/VALIDATION.md)
-- [Privacy policy draft](docs/PRIVACY.md)
+```powershell
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+$adb = Join-Path $env:ANDROID_HOME "platform-tools\adb.exe"
 
-Production capabilities are released behind server configuration flags so a cloud failure never disables the local bubble, Quick Fill, vault, or reminders.
+& $adb devices
+.\gradlew.bat :app:assemblePlayDebug
+& $adb reverse tcp:8787 tcp:8787
+& $adb install -r "app\build\outputs\apk\play\debug\app-play-debug.apk"
+```
 
-## Scope and limitations
+Debug builds use `http://127.0.0.1:8787/`; `adb reverse` connects that address on Android to the laptop's backend. If multiple devices are connected, add `-s <device-serial>` to each ADB command.
 
-- Force-stop can’t be auto-recovered; some OEMs need a manual exemption.
-- Protected screens provide no context; ChatGPT sees only approved Shared AI via MCP.
-- Clipboard image support varies — Share/Save are the reliable fallbacks.
+### 3. Enable the bubble
 
-## License
+Open **Context Bubble**, complete onboarding, and grant the requested overlay, Accessibility, and notification permissions. Grant microphone access when using voice. Enable the bubble, then try the demo above in an allowed app.
 
-Context Bubble is available under the [MIT License](LICENSE). Copyright © 2026 Manjunath Patil.
+### Build variants
+
+| Variant | Purpose | Debug APK |
+|---|---|---|
+| **Play** | Main app with the Play-specific actuator. | `app/build/outputs/apk/play/debug/app-play-debug.apk` |
+| **Lab** | Experimental automation build. | `app/build/outputs/apk/lab/debug/app-lab-debug.apk` |
+
+Build the Lab APK with `:app:assembleLabDebug`. Use `adb install -r` for updates to preserve application data.
+
+Release builds require a configured HTTPS backend. Supply `MANAGED_BACKEND_URL` or the `managedBackendUrl` Gradle property; the URL must end with `/`. The source default is a placeholder Supabase URL.
+
+## Validation commands
+
+Android unit tests, lint, and both debug APKs:
+
+```powershell
+.\gradlew.bat testPlayDebugUnitTest testLabDebugUnitTest lintPlayDebug assemblePlayDebug assembleLabDebug
+```
+
+Backend checks:
+
+```powershell
+Set-Location backend
+npm ci
+npm run typecheck
+npm test
+```
+
+Optional Supabase Edge Function checks require Deno, run from `backend/`:
+
+```powershell
+deno task check:edge
+```
+
+Consent-site build, run from the repository root:
+
+```powershell
+Set-Location oauth-consent
+npm ci
+npm run build
+```
+
+Android test sources cover policy decisions, field validation, overlay geometry, search, flavor isolation, and database migration. Performance measurements and longer device trials have their own [validation record](docs/VALIDATION.md) and [performance plan](docs/PERFORMANCE.md).
+
+## Repository guide
+
+| Path | Contents |
+|---|---|
+| [`app/`](app/) | Android app, Play/Lab source sets, database schemas, and tests. |
+| [`backend/`](backend/) | Assistant API, integration services, tests, and deployment scripts. |
+| [`backend/supabase/`](backend/supabase/) | Optional Edge Functions and database migrations. |
+| [`oauth-consent/`](oauth-consent/) | Consent website. |
+| [`docs/`](docs/) | Screenshots, deployment notes, privacy, performance, and validation. |
+| [`aboutproject.md`](aboutproject.md) | Project motivation and development story. |
+
+## Practical limits
+
+- AI features need network access and configured services; the current prototype does not provide offline model inference.
+- Android permissions and protected screens can prevent capture or text insertion. Accessibility support varies between apps.
+- Force-stopping the app requires reopening it; some manufacturers also require battery-management adjustments.
+- Exact reminders depend on Android alarm permissions. The scheduler falls back to an inexact alarm when necessary.
+- Generated-image clipboard support varies; save and share provide additional output paths.
+- Optional cloud integrations need deployment and configuration; their presence in the repository does not establish that they are active in a running build.
+
+## Next steps
+
+- Evaluate on-device inference and retrieval on supported hardware.
+- Measure idle cost, gesture responsiveness, and voice reliability across more devices.
+- Validate optional integrations end to end before enabling broader use.
+- Refine the capture → preview → action experience through user testing.
+
+## Author and license
+
+Built from scratch by **Manjunath Patil** for the **Productivity** track of **iQOO Hackathon 2026 · Grand Finale**.
+
+Licensed under the [MIT License](LICENSE). Copyright © 2026 Manjunath Patil.
